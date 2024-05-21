@@ -5,6 +5,7 @@ mode = params.publish_dir_mode
 
 process EXTRACT_ADATA {
     publishDir "${out_dir}", mode: "$mode"
+    conda = '/home/kvalem/.conda/envs/scanpy'
 
     input:
     path(adata_ch)

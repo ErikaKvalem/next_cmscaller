@@ -9,6 +9,7 @@ import fast_matrix_market as fmm
 import pandas as pd
 import scanpy as sc
 import scipy
+import decoupler as dc
 
 
 def parse_args(args=None):
@@ -18,6 +19,30 @@ def parse_args(args=None):
     parser = argparse.ArgumentParser(description=Description, epilog=Epilog)
     parser.add_argument("--adata")
     return parser.parse_args(args)
+
+def pseudobulk(adata,groups_col,sample_col):
+    # Pseudobulk by sample type 
+  
+    layer="counts"
+    pseudobulk = [
+        (
+            group,
+            dc.get_pseudobulk(
+                adata,
+                sample_col=sample_col,
+                groups_col=groups_col,
+                layer=layer,
+                mode="sum",
+                min_prop=0.05,
+                min_cells=10,
+                min_counts=500,
+                min_smpls=10,
+            ),
+        )
+        for group in adata.obs[groups_col].unique()
+    ]
+    pdata = pseudobulk[0][1]
+
 
 
 def convert_to_CSC(data_mat: scipy.sparse.spmatrix) -> scipy.sparse.csc_matrix:
@@ -77,10 +102,14 @@ def extract_adata(adata):
         "umap.tsv.gz", sep="\t", index=False, compression="gzip"
     )
 
+
 def main(args=None):
     args = parse_args(args)
-    
-    extract_adata(adata=sc.read_h5ad(args.adata))
+    groups_col=""
+    sample_col=""
+    adata=sc.read_h5ad(args.adata)
+    pdata = pseudobulk(adata,groups_col,sample_col)
+    extract_adata(pdata)
 
 
 if __name__ == "__main__":
