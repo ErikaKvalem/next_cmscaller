@@ -11,7 +11,7 @@ process EXTRACT_ADATA {
     path(adata_ch)
 
     output:
-    path("*.mtx"), emit: counts_matrix
+    path("*counts.tsv"), emit: counts_matrix
 
     script:
     """

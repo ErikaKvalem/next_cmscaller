@@ -42,6 +42,8 @@ def pseudobulk(adata,groups_col,sample_col):
         for group in adata.obs[groups_col].unique()
     ]
     pdata = pseudobulk[0][1]
+    #pdata.layers['counts']=pdata.X.copy()
+    return pdata
 
 
 
@@ -74,10 +76,12 @@ def convert_to_CSC(data_mat: scipy.sparse.spmatrix) -> scipy.sparse.csc_matrix:
 def extract_adata(adata):
 
 
-    fmm.mmwrite(
-        "counts_matrix.mtx",
-        convert_to_CSC(scipy.sparse.csr_matrix(adata.layers["counts"].T)),
-    )
+    #fmm.mmwrite(
+    #    "counts_matrix.mtx",
+    #    convert_to_CSC(scipy.sparse.csr_matrix(adata.layers["counts"].T)),
+    #)
+
+    adata.copy().T.to_df().to_csv('counts.tsv')
     
     pd.DataFrame(adata.var.index).to_csv(
         "features.tsv.gz",
@@ -98,16 +102,19 @@ def extract_adata(adata):
     adata.obs.to_csv("metadata.tsv", sep="\t", index=True)
     adata.var.to_csv("metadata_var.tsv", sep="\t", index=True)
 
-    pd.DataFrame(adata.obsm["X_umap"]).to_csv(
-        "umap.tsv.gz", sep="\t", index=False, compression="gzip"
-    )
+    #pd.DataFrame(adata.obsm["X_umap"]).to_csv(
+    #    "umap.tsv.gz", sep="\t", index=False, compression="gzip"
+    #)
 
 
 def main(args=None):
     args = parse_args(args)
-    groups_col=""
-    sample_col=""
+    sample_col ="sample_id"
+    groups_col="sample_type"
+
     adata=sc.read_h5ad(args.adata)
+    adata =  adata[adata.obs["enrichment_cell_types"]=="naive"]
+   
     pdata = pseudobulk(adata,groups_col,sample_col)
     extract_adata(pdata)
 

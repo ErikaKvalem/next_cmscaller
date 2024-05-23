@@ -1,1 +1,1 @@
-nextflow run ./main.nf -profile cluster
+nextflow run ./main.nf -profile cluster -resume
