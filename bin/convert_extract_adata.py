@@ -81,7 +81,7 @@ def extract_adata(adata):
     #    convert_to_CSC(scipy.sparse.csr_matrix(adata.layers["counts"].T)),
     #)
 
-    adata.copy().T.to_df().to_csv('counts.tsv')
+    adata.copy().T.to_df().to_csv('counts.csv')
     
     pd.DataFrame(adata.var.index).to_csv(
         "features.tsv.gz",
