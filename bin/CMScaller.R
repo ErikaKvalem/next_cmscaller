@@ -23,7 +23,8 @@ options(scipen=-1, digits=2)
 
 # Input from command line
 arguments <- docopt(doc, version = "0.1")
-counts <- read.csv(arguments$count_mat, sep = "\t")
+counts <- read.table("/data/scratch/kvalem/projects/2022/OLD/next_cmscaller/work/c2/6cece5613b872ce61b7c6a7d813f08/counts_matrix.mtx")
+#counts <- read.csv(arguments$count_mat, sep = "\t")
 rownames(counts) <- counts$X
 counts <- counts[,-1]
 
